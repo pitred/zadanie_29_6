@@ -6,7 +6,7 @@ mongoose.connect('mongodb://localhost/nodeappdatabase', {
    useMongoClient: true
 });
 
-//new user Schema
+// new user Schema
 const userSchema = new Schema({
    name: String,
    username: { type: String, required: true, unique: true },
@@ -16,19 +16,17 @@ const userSchema = new Schema({
    updated_at: Date
 });
 
-//Mongoose schema method
+// Mongoose schema method
 userSchema.methods.manify = function(next) {
    this.name = this.name + '-boy';
 
    return next(null, this.name);
 };
 
-//pre-save method
+// pre-save method
 userSchema.pre('save', function(next) {
-   //pobranie aktualnego czasu
    const currentDate = new Date();
 
-   //zmiana pola na aktualny czas
    this.updated_at = currentDate;
 
    if (!this.created_at) this.created_at = currentDate;
@@ -36,10 +34,9 @@ userSchema.pre('save', function(next) {
    next();
 });
 
-//model based on userSchema
+// model based on userSchema
 const User = mongoose.model('User', userSchema);
 
-//instancje klasy User
 const kenny = new User({
    name: 'Kenny',
    username: 'Kenny_the_boy',
@@ -89,7 +86,7 @@ const findSpecificRecord = function() {
    });
 };
 
-const updadeUserPassword = function() {
+const updateUserPassword = function() {
    // update user password
    return User.findOne({ username: 'Kenny_the_boy' }).then(function(user) {
       console.log('Old password is ' + user.password);
@@ -131,9 +128,9 @@ const findKennyAndDelete = function() {
    });
 };
 
-const findBennyAndRemove = function() {
+const findBennyAndDelete = function() {
    // find specific user and delete
-   return User.findOneAndRemove({ username: 'Benny_the_man' }).then(function(user) {
+   return User.findOne({ username: 'Benny_the_man' }).then(function(user) {
       return user.remove(function() {
          console.log('User successfully deleted');
       });
@@ -143,9 +140,9 @@ const findBennyAndRemove = function() {
 Promise.all([kenny.save(), mark.save(), benny.save()])
    .then(findAllUsers)
    .then(findSpecificRecord)
-   .then(updadeUserPassword)
+   .then(updateUserPassword)
    .then(updateUsername)
    .then(findMarkAndDelete)
    .then(findKennyAndDelete)
-   .then(findBennyAndRemove)
+   .then(findBennyAndDelete)
    .catch(console.log.bind(console));
